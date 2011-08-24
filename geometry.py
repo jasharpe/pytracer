@@ -39,14 +39,29 @@ class Vector(object):
     self.z = z
     self.w = 0
 
+  def __repr__(self):
+    return "Vector(%f, %f, %f)" % (self.x, self.y, self.z)
+
+  def __neg__(self):
+    return Vector(-self.x, -self.y, -self.z)
+
   def __rmul__(self, s):
     if type(s) is int or type(s) is float:
       return Vector(self.x * s, self.y * s, self.z * s)
+    elif type(s) is Vector:
+      return s.__mul__(self)
     raise TypeError()
 
   def __mul__(self, s):
     if type(s) is int or type(s) is float:
       return Vector(self.x * s, self.y * s, self.z * s)
+    elif type(s) is Vector:
+      v = Vector(
+          self.y * s.z - self.z * s.y,
+          self.z * s.x - self.x * s.z,
+          self.x * s.y - self.y * s.x
+      )
+      return v
     raise TypeError()
 
   def __add__(self, v):
@@ -69,7 +84,7 @@ class Vector(object):
   def reflect(self, normal):
     v = self.normalize()
     n = normal.normalize()
-    return self - 2 * v.dot(n) * n
+    return (self - 2 * v.dot(n) * n).normalize()
 
   def dot(self, v):
     if type(v) is Vector:

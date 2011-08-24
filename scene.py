@@ -18,10 +18,11 @@ class Intersection(object):
     self.obj = obj
 
 class Material(object):
-  def __init__(self, diffuse, specular, shininess):
+  def __init__(self, diffuse, specular, shininess, reflectivity):
     self.diffuse = diffuse
     self.specular = specular
     self.shininess = shininess
+    self.reflectivity = reflectivity
 
 class Sphere(object):
   def __init__(self, position, radius, material):
@@ -45,9 +46,14 @@ class Sphere(object):
     return intersections
 
 class Scene(object):
-  def __init__(self, ambient):
+  def __init__(self, resolution, origin, view_direction, up_direction, fov, ambient):
     self.children = []
     self.lights = []
+    self.resolution = resolution
+    self.origin = origin
+    self.view_direction = view_direction
+    self.up_direction = up_direction
+    self.fov = fov
     self.ambient = ambient
 
   def add_child(self, child):
