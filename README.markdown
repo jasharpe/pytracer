@@ -17,3 +17,5 @@ So far, Pytracer can:
 
 * draw spheres
 * do simple ambient, diffuse and specular lighting, with correct shadowing
+* do 4x antialiasing
+* do reflections of shiny materials

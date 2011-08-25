@@ -14,7 +14,7 @@ class Raytracer(object):
     specular = intersection.obj.material.specular
     shininess = intersection.obj.material.shininess
 
-    color = map(lambda (x, y): x * y / 255.0, zip(ambient, diffuse))
+    color = map(lambda (x, y): x * y, zip(ambient, diffuse))
     for light in scene.lights:
       point = intersection.position
       light_direction = (light.position - point).normalize()
@@ -35,13 +35,13 @@ class Raytracer(object):
         lighting = 0
         # diffuse
         if l_dot_n > 0:
-          lighting += diffuse[i] * l_dot_n * light.color[i] / 255.0
+          lighting += diffuse[i] * l_dot_n * light.color[i]
         if r_dot_v > 0:
-          lighting += specular[i] * (r_dot_v ** shininess) * light.color[i] / 255.0
+          lighting += specular[i] * (r_dot_v ** shininess) * light.color[i]
         if lighting > 0:
           color[i] += lighting * attenuation
 
-    return map(lambda x: min(255, x), color)
+    return color
   
   def cast_ray(self, ray, scene):
     intersections = scene.intersect(ray)
@@ -61,6 +61,8 @@ class Raytracer(object):
     original_resolution = scene.resolution
     if aa:
       resolution = map(lambda x: 2 * x, scene.resolution)
+    else:
+      resolution = scene.resolution
     fov_radians = scene.fov * math.pi / 180.0
     image = pygame.Surface(resolution)
     x_direction = (scene.view_direction.normalize() * scene.up_direction.normalize()).normalize()
@@ -89,10 +91,11 @@ class Raytracer(object):
               break
             ref_color = self.calculate_color(current_ray, current_intersection, scene)
             for i in xrange(0, 3):
-              color[i] = min(255, color[i] + reflected_component * ref_color[i])
+              color[i] = color[i] + reflected_component * ref_color[i]
             reflected_component *= current_intersection.obj.material.shininess / 100.0
           
-          image.set_at((x, y), color)
+          display_color = tuple(map(lambda x: min(255, int(round(255 * x))), color))
+          image.set_at((x, y), display_color)
         else:
           bg_color = (0, 0, 255 * y / float(resolution[1]))
           image.set_at((x, y), bg_color)
