@@ -68,22 +68,6 @@ class Scene(object):
       intersections |= child.intersect(ray)
     return intersections
 
-def load_module(code_path):
-  try:
-    try:
-      code_dir = os.path.dirname(code_path)
-      code_file = os.path.basename(code_path)
-      fin = open(code_path, 'rb')
-      return  imp.load_source(md5.new(code_path).hexdigest(), code_path, fin)
-    finally:
-      try: fin.close()
-      except: pass
-  except ImportError, x:
-    traceback.print_exc(file = sys.stderr)
-    raise
-  except:
-    traceback.print_exc(file = sys.stderr)
-    raise
-
 def load_scene(path):
-  return load_module(path + ".py")
+  full_path = path + ".py"
+  return imp.load_source(md5.new(full_path).hexdigest(), path + ".py", open(full_path, 'rb'))
